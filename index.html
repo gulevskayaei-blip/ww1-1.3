@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A World of Imagination — интерактивный</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #f0ede8;
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+      padding: 24px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .app {
+      max-width: 1050px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 32px;
+      box-shadow: 0 20px 60px rgba(60, 40, 80, 0.12);
+      overflow: hidden;
+    }
+
+    /* ——— Шапка ——— */
+    .header {
+      background: linear-gradient(135deg, #5a3a7a, #7a4a9a);
+      color: white;
+      text-align: center;
+      padding: 28px 20px 20px;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 2.4rem;
+      letter-spacing: 2px;
+      position: relative;
+    }
+    .header span {
+      font-size: 1rem;
+      font-family: 'Segoe UI', sans-serif;
+      letter-spacing: 0;
+      opacity: 0.8;
+      display: block;
+      margin-top: 4px;
+      font-weight: 400;
+    }
+
+    /* ——— Интро ——— */
+    .intro {
+      padding: 22px 36px;
+      color: #3d2d50;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      background: #faf8fe;
+      border-bottom: 1px solid #ede6f5;
+    }
+    .intro strong {
+      color: #5a3a7a;
+    }
+
+    /* ——— Основная сетка ——— */
+    .grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 28px;
+      padding: 24px 32px 28px;
+      background: #fcfaff;
+    }
+    .grid .img-placeholder {
+      background: #e6def0;
+      border-radius: 20px;
+      min-height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #7a6a8a;
+      font-weight: 600;
+      font-size: 1.1rem;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250" width="400" height="250"><rect width="400" height="250" fill="%23e6def0"/><text x="50" y="130" font-family="Segoe UI" font-size="18" fill="%237a6a8a">🖼️ Фото LARP</text><text x="50" y="160" font-family="Segoe UI" font-size="14" fill="%239080a0">(лес, костюмы, фэнтези)</text></svg>');
+      background-size: cover;
+      background-position: center;
+    }
+
+    .qa-block {
+      margin-bottom: 16px;
+    }
+    .qa-block .q {
+      font-weight: 700;
+      color: #5a3a7a;
+      font-size: 1.05rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 6px 0;
+      border-bottom: 1px dashed #e6def0;
+      transition: 0.15s;
+    }
+    .qa-block .q:hover {
+      color: #7a4a9a;
+    }
+    .qa-block .q .num {
+      font-weight: 400;
+      color: #a090b0;
+      font-size: 0.8rem;
+    }
+    .qa-block .a {
+      padding: 8px 0 4px 6px;
+      color: #3d3250;
+      line-height: 1.5;
+      font-size: 0.95rem;
+      display: none;
+    }
+    .qa-block .a.show {
+      display: block;
+    }
+
+    /* ——— Задания ——— */
+    .tasks {
+      padding: 20px 32px 32px;
+      border-top: 8px solid #f0ece6;
+    }
+    .task {
+      background: #faf8fd;
+      border-radius: 20px;
+      padding: 20px 24px;
+      margin-bottom: 24px;
+      border-left: 5px solid #d06a9e;
+      transition: 0.15s;
+    }
+    .task:hover {
+      border-left-color: #b84a7e;
+    }
+    .task h2 {
+      font-size: 1.15rem;
+      color: #b84a7e;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+
+    .task textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 2px solid #e6def0;
+      font-family: inherit;
+      font-size: 0.95rem;
+      resize: vertical;
+      transition: 0.2s;
+    }
+    .task textarea:focus {
+      outline: none;
+      border-color: #7a4a9a;
+      box-shadow: 0 0 0 4px rgba(122, 74, 154, 0.12);
+    }
+
+    .choice-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 8px 0 4px;
+    }
+    .choice {
+      padding: 8px 18px;
+      border: 2px solid #d6c8e6;
+      border-radius: 40px;
+      background: white;
+      cursor: pointer;
+      transition: 0.15s;
+      font-weight: 500;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .choice:hover {
+      background: #f0eaff;
+      border-color: #b090c0;
+    }
+    .choice input {
+      display: none;
+    }
+    .choice.selected {
+      background: #5a3a7a;
+      color: white;
+      border-color: #5a3a7a;
+    }
+    .choice.correct {
+      background: #43a047;
+      color: white;
+      border-color: #43a047;
+    }
+    .choice.wrong {
+      background: #e57373;
+      color: white;
+      border-color: #e57373;
+    }
+
+    /* ——— TF ——— */
+    .tf-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px 12px;
+      padding: 8px 4px;
+      border-bottom: 1px solid #ede6f5;
+    }
+    .tf-row .num {
+      font-weight: 700;
+      color: #5a3a7a;
+      width: 28px;
+    }
+    .tf-row .text {
+      flex: 1;
+      min-width: 160px;
+    }
+    .tf-row .tf-btns {
+      display: flex;
+      gap: 6px;
+    }
+    .tf-row .tf-btns button {
+      padding: 4px 16px;
+      border-radius: 30px;
+      border: 2px solid #d6c8e6;
+      background: white;
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .tf-row .tf-btns button:hover {
+      background: #f0eaff;
+    }
+    .tf-row .tf-btns button.sel-true {
+      background: #43a047;
+      color: white;
+      border-color: #43a047;
+    }
+    .tf-row .tf-btns button.sel-false {
+      background: #e57373;
+      color: white;
+      border-color: #e57373;
+    }
+    .tf-row .tf-btns button.correct {
+      background: #43a047;
+      color: white;
+      border-color: #43a047;
+    }
+    .tf-row .tf-btns button.wrong {
+      background: #e57373;
+      color: white;
+      border-color: #e57373;
+    }
+
+    /* ——— Vocab (drag & drop) ——— */
+    .vocab-bank {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 12px 0 16px;
+      padding: 12px 16px;
+      background: #f9f3ff;
+      border-radius: 20px;
+      border: 2px dashed #d6c8e6;
+      min-height: 56px;
+    }
+    .vocab-word {
+      padding: 6px 18px;
+      background: white;
+      border-radius: 40px;
+      border: 2px solid #d06a9e;
+      font-weight: 600;
+      color: #5a3a7a;
+      cursor: grab;
+      user-select: none;
+      transition: 0.15s;
+      font-size: 0.9rem;
+    }
+    .vocab-word:hover {
+      background: #fce8f2;
+      transform: scale(1.03);
+    }
+    .vocab-word.used {
+      display: none;
+    }
+
+    .vocab-gaps {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 8px 0 4px;
+    }
+    .vocab-gaps p {
+      font-size: 0.98rem;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .drop-zone {
+      display: inline-block;
+      min-width: 100px;
+      padding: 4px 14px;
+      border-bottom: 3px solid #5a3a7a;
+      background: #fcfaff;
+      text-align: center;
+      font-weight: 600;
+      color: #3d3250;
+      min-height: 34px;
+      border-radius: 6px 6px 0 0;
+      transition: 0.15s;
+      cursor: default;
+    }
+    .drop-zone.dropped {
+      background: #edf5ed;
+      border-bottom-color: #43a047;
+    }
+    .drop-zone.correct {
+      background: #dff1e3;
+      border-bottom-color: #43a047;
+    }
+    .drop-zone.wrong {
+      background: #ffdada;
+      border-bottom-color: #e57373;
+    }
+
+    /* ——— Кнопки ——— */
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 6px 0 12px;
+    }
+    .btn {
+      border: none;
+      padding: 10px 28px;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: 0.2s;
+      background: #d06a9e;
+      color: white;
+      box-shadow: 0 4px 12px rgba(208, 106, 158, 0.25);
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(208, 106, 158, 0.3);
+    }
+    .btn-secondary {
+      background: #5a3a7a;
+      box-shadow: 0 4px 12px rgba(90, 58, 122, 0.25);
+    }
+    .btn-secondary:hover {
+      box-shadow: 0 6px 18px rgba(90, 58, 122, 0.3);
+    }
+
+    .result-badge {
+      display: inline-block;
+      padding: 8px 24px;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      background: #ede6f5;
+      color: #5a3a7a;
+      margin-left: 10px;
+    }
+
+    /* ——— Thinking ——— */
+    .thinking {
+      background: #fcf3f9;
+      border-radius: 20px;
+      padding: 20px 24px;
+      margin-top: 20px;
+      border: 2px solid #f0dce8;
+    }
+    .thinking h2 {
+      color: #b84a7e;
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+    }
+    .thinking h3 {
+      color: #5a3a7a;
+      font-size: 1rem;
+      margin: 16px 0 4px;
+    }
+    .thinking textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 2px solid #e6def0;
+      font-family: inherit;
+      font-size: 0.95rem;
+      resize: vertical;
+      transition: 0.2s;
+    }
+    .thinking textarea:focus {
+      outline: none;
+      border-color: #b84a7e;
+      box-shadow: 0 0 0 4px rgba(184, 74, 126, 0.12);
+    }
+
+    /* ——— Footer ——— */
+    .footer {
+      padding: 14px 32px;
+      border-top: 1px solid #ede6f5;
+      text-align: right;
+      color: #a090b0;
+      font-size: 0.85rem;
+      background: #fcfaff;
+    }
+
+    /* ——— Responsive ——— */
+    @media (max-width: 750px) {
+      .grid {
+        grid-template-columns: 1fr;
+        padding: 16px;
+      }
+      .header {
+        font-size: 1.8rem;
+        padding: 20px;
+      }
+      .tasks {
+        padding: 16px;
+      }
+      .task {
+        padding: 16px;
+      }
+      .intro {
+        padding: 16px 20px;
+        font-size: 1rem;
+      }
+      .tf-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Шапка -->
+  <div class="header">
+    🌿 A WORLD OF IMAGINATION
+    <span>субботнее утро · лес · LARP</span>
+  </div>
+
+  <!-- Интро -->
+  <div class="intro">
+    <strong>It’s Saturday morning.</strong> I’m in a forest. It’s full of people in strange costumes.
+    Who are they and why are they here? <strong>Fifteen-year-old Megan from Manchester</strong> is here to answer my questions.
+  </div>
+
+  <!-- Сетка с Q&A -->
+  <div class="grid">
+    <div class="img-placeholder"></div>
+    <div>
+      <div class="qa-block">
+        <div class="q" onclick="toggleA(this)">❓ So, Megan, who are these people? <span class="num">стр.5</span></div>
+        <div class="a">They’re LARPers. LARP, or Live Action Role Play, is a type of game. You can be a character from a film, or create your own character, and then act in an exciting story with other people.</div>
+      </div>
+      <div class="qa-block">
+        <div class="q" onclick="toggleA(this)">🧝 Who is your character? <span class="num">стр.10</span></div>
+        <div class="a">My character today is called Dragora. She’s a forest queen with long grey hair. She’s 100 years old, but her face is young. She’s clever and brave, and she can ride dragons.</div>
+      </div>
+      <div class="qa-block">
+        <div class="q" onclick="toggleA(this)">🤔 Are you like Dragora? <span class="num">стр.15</span></div>
+        <div class="a">Ha ha, very funny! No, I’m not! In real life, I’m quiet and nervous. And my hair isn’t grey – it’s brown!</div>
+      </div>
+      <div class="qa-block">
+        <div class="q" onclick="toggleA(this)">🔥 Why is LARP popular? <span class="num">стр.20</span></div>
+        <div class="a">It’s popular because you can leave the real world and enter a new world – a world of imagination. It’s a great way to make friends – young and old. Everybody is friendly and kind.</div>
+      </div>
+      <div class="qa-block">
+        <div class="q" onclick="toggleA(this)">🌍 Who is it popular with? <span class="num">стр.25</span></div>
+        <div class="a">It’s popular with people of all ages and all over the world!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Задания -->
+  <div class="tasks" id="tasksContainer">
+
+    <!-- Задание 1 -->
+    <div class="task">
+      <h2>1. Who is your favourite book or film character?</h2>
+      <textarea rows="3" placeholder="My favourite character is ..." id="ex1Input"></textarea>
+    </div>
+
+    <!-- Задание 2 -->
+    <div class="task">
+      <h2>2. Choose the correct answer.</h2>
+      <p style="font-weight:500; margin-bottom:6px;">LARP is a type of ...</p>
+      <div class="choice-group" id="mcGroup">
+        <label class="choice" data-value="a"><input type="radio" name="q2"> a film</label>
+        <label class="choice" data-value="b"><input type="radio" name="q2"> a game</label>
+        <label class="choice" data-value="c"><input type="radio" name="q2"> a character in stories</label>
+      </div>
+    </div>
+
+    <!-- Задание 3 -->
+    <div class="task">
+      <h2>3. True or false? Исправьте ложные утверждения.</h2>
+      <div id="tfContainer"></div>
+    </div>
+
+    <!-- Задание 4 – Vocabulary (drag & drop) -->
+    <div class="task">
+      <h2>4. Vocabulary — personality adjectives</h2>
+      <p style="margin-bottom: 6px; color:#555;">Перетащите слово в пропуск. Использованные слова исчезают.</p>
+      <div class="vocab-bank" id="vocabBank"></div>
+      <div class="vocab-gaps" id="vocabGaps"></div>
+    </div>
+
+    <!-- Thinking Time -->
+    <div class="thinking">
+      <h2>🧠 THINKING TIME</h2>
+      <h3>ANALYSE</h3>
+      <p style="color:#555;">Describe Megan’s personality.</p>
+      <textarea rows="2" placeholder="Megan is ..." id="ttAnalyse"></textarea>
+      <h3>EVALUATE</h3>
+      <p style="color:#555;">Is LARP a good idea? Why/Why not?</p>
+      <textarea rows="2" placeholder="I think ... because ..." id="ttEvaluate"></textarea>
+      <h3>CREATE</h3>
+      <p style="color:#555;">What character would you like to play? Why?</p>
+      <textarea rows="2" placeholder="I would like to play ..." id="ttCreate"></textarea>
+    </div>
+
+    <!-- Кнопки -->
+    <div class="btn-group" style="margin-top:20px;">
+      <button class="btn" onclick="checkAll()">✅ Проверить ответы</button>
+      <button class="btn btn-secondary" onclick="resetAll()">🔄 Очистить</button>
+      <span class="result-badge" id="resultBadge">0 / 12</span>
+    </div>
+
+  </div>
+
+  <div class="footer">💾 Ответы сохраняются автоматически в этом браузере.</div>
+</div>
+
+<script>
+  // ——— Данные для TF ———
+  const tfData = [
+    { text: 'Megan is a teenager.', answer: true },
+    { text: 'Dragora’s hair is short.', answer: false },
+    { text: 'Dragora is a young girl.', answer: false },
+    { text: 'Megan is different to Dragora.', answer: true },
+    { text: 'It’s easy to make friends at a LARP.', answer: true },
+    { text: 'LARP is popular only in the UK.', answer: false }
+  ];
+
+  // ——— Данные для Vocab ———
+  const vocabWords = ['brave', 'clever', 'confident', 'friendly', 'funny', 'kind', 'nervous', 'quiet', 'relaxed', 'shy'];
+  const vocabGapsData = [
+    { prefix: 'Dragora is', answer: 'brave' },
+    { prefix: 'Megan is', answer: 'quiet' },
+    { prefix: 'Megan is', answer: 'nervous' },
+    { prefix: 'Everybody is', answer: 'friendly' },
+    { prefix: 'LARP is popular with people of all ages (it\'s)', answer: 'popular' }
+  ];
+
+  // ——— Состояние ———
+  let tfSelections = {};
+  let vocabSelections = {};
+
+  // ——— Инициализация TF ———
+  function renderTF() {
+    const container = document.getElementById('tfContainer');
+    container.innerHTML = '';
+    tfData.forEach((item, i) => {
+      const row = document.createElement('div');
+      row.className = 'tf-row';
+      row.dataset.idx = i;
+      row.innerHTML = `
+        <span class="num">${i+1}</span>
+        <span class="text">${item.text}</span>
+        <div class="tf-btns">
+          <button data-value="true" onclick="selectTF(this, ${i}, true)">✅ True</button>
+          <button data-value="false" onclick="selectTF(this, ${i}, false)">❌ False</button>
+        </div>
+      `;
+      container.appendChild(row);
+
+      // Восстанавливаем сохранённое состояние
+      if (tfSelections[i] !== undefined) {
+        const btns = row.querySelectorAll('.tf-btns button');
+        btns.forEach(b => {
+          if ((b.dataset.value === 'true' && tfSelections[i] === true) ||
+              (b.dataset.value === 'false' && tfSelections[i] === false)) {
+            b.classList.add(tfSelections[i] ? 'sel-true' : 'sel-false');
+          }
+        });
+      }
+    });
+  }
+
+  function selectTF(btn, idx, value) {
+    const row = btn.closest('.tf-row');
+    row.querySelectorAll('.tf-btns button').forEach(b => b.classList.remove('sel-true', 'sel-false'));
+    btn.classList.add(value ? 'sel-true' : 'sel-false');
+    tfSelections[idx] = value;
+    saveState();
+  }
+
+  // ——— Инициализация Vocab (drag & drop) ———
+  function renderVocab() {
+    const bank = document.getElementById('vocabBank');
+    const gaps = document.getElementById('vocabGaps');
+    bank.innerHTML = '';
+    gaps.innerHTML = '';
+
+    // Банк слов
+    vocabWords.forEach(w => {
+      const span = document.createElement('span');
+      span.className = 'vocab-word';
+      span.textContent = w;
+      span.draggable = true;
+      span.dataset.word = w;
+      if (Object.values(vocabSelections).includes(w)) {
+        span.classList.add('used');
+      }
+      span.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text/plain', w);
+      });
+      bank.appendChild(span);
+    });
+
+    // Пропуски
+    vocabGapsData.forEach((item, i) => {
+      const p = document.createElement('p');
+      const prefix = document.createElement('span');
+      prefix.textContent = item.prefix + ' ';
+      p.appendChild(prefix);
+
+      const drop = document.createElement('span');
+      drop.className = 'drop-zone';
+      drop.dataset.answer = item.answer;
+      drop.dataset.idx = i;
+
+      // Восстанавливаем выбранное слово
+      if (vocabSelections[i]) {
+        drop.textContent = vocabSelections[i];
+        drop.classList.add('dropped');
+        // помечаем слово как использованное
+        const wordEl = bank.querySelector(`.vocab-word[data-word="${vocabSelections[i]}"]`);
+        if (wordEl) wordEl.classList.add('used');
+      }
+
+      drop.addEventListener('dragover', (e) => e.preventDefault());
+      drop.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const word = e.dataTransfer.getData('text/plain');
+        if (!word) return;
+
+        // Если в drop уже есть слово — возвращаем его в банк
+        if (drop.textContent && drop.textContent.trim()) {
+          const oldWord = drop.textContent.trim();
+          const oldEl = bank.querySelector(`.vocab-word[data-word="${oldWord}"]`);
+          if (oldEl) oldEl.classList.remove('used');
+        }
+
+        drop.textContent = word;
+        drop.classList.add('dropped');
+        vocabSelections[i] = word;
+
+        // Скрываем слово в банке
+        const wordEl = bank.querySelector(`.vocab-word[data-word="${word}"]`);
+        if (wordEl) wordEl.classList.add('used');
+
+        saveState();
+      });
+
+      p.appendChild(drop);
+      p.appendChild(document.createTextNode('.'));
+      gaps.appendChild(p);
+    });
+  }
+
+  // ——— Проверка всех ответов ———
+  function checkAll() {
+    let score = 0;
+
+    // Ex1: просто проверяем, что что-то написано
+    const ex1 = document.getElementById('ex1Input').value.trim();
+    if (ex1.length > 5) score += 1;
+
+    // Ex2: MCQ
+    const mcSelected = document.querySelector('#mcGroup .choice.selected');
+    if (mcSelected && mcSelected.dataset.value === 'b') {
+      score += 1;
+      mcSelected.classList.add('correct');
+    } else if (mcSelected) {
+      mcSelected.classList.add('wrong');
+      // показываем правильный
+      document.querySelector('#mcGroup .choice[data-value="b"]').classList.add('correct');
+    }
+
+    // Ex3: TF
+    let tfCorrect = 0;
+    document.querySelectorAll('.tf-row').forEach((row, i) => {
+      const btns = row.querySelectorAll('.tf-btns button');
+      btns.forEach(b => b.classList.remove('correct', 'wrong'));
+      const selected = Array.from(btns).find(b => b.classList.contains('sel-true') || b.classList.contains('sel-false'));
+      if (selected) {
+        const userVal = selected.dataset.value === 'true';
+        const isCorrect = userVal === tfData[i].answer;
+        selected.classList.add(isCorrect ? 'correct' : 'wrong');
+        if (isCorrect) tfCorrect++;
+      }
+    });
+    score += tfCorrect;
+
+    // Ex4: Vocab
+    let vocabCorrect = 0;
+    document.querySelectorAll('.drop-zone').forEach((drop, i) => {
+      drop.classList.remove('correct', 'wrong');
+      const userWord = drop.textContent.trim();
+      const expected = drop.dataset.answer;
+      if (userWord && userWord === expected) {
+        drop.classList.add('correct');
+        vocabCorrect++;
+      } else if (userWord) {
+        drop.classList.add('wrong');
+      }
+    });
+    score += vocabCorrect;
+
+    // Thinking Time: считаем заполненными
+    const ttFields = ['ttAnalyse', 'ttEvaluate', 'ttCreate'];
+    let ttCount = 0;
+    ttFields.forEach(id => {
+      if (document.getElementById(id).value.trim().length > 3) ttCount++;
+    });
+    score += ttCount;
+
+    // Общий максимум: 1(ex1) + 1(ex2) + 6(tf) + 5(vocab) + 3(tt) = 16
+    document.getElementById('resultBadge').textContent = `${score} / 16`;
+  }
+
+  // ——— Сохранение состояния в localStorage ———
+  function saveState() {
+    const data = {
+      tfSelections,
+      vocabSelections,
+      ex1: document.getElementById('ex1Input').value,
+      ttAnalyse: document.getElementById('ttAnalyse').value,
+      ttEvaluate: document.getElementById('ttEvaluate').value,
+      ttCreate: document.getElementById('ttCreate').value,
+      mcSelected: document.querySelector('#mcGroup .choice.selected')?.dataset.value || null
+    };
+    localStorage.setItem('larpState', JSON.stringify(data));
+  }
+
+  // ——— Восстановление состояния ———
+  function loadState() {
+    const raw = localStorage.getItem('larpState');
+    if (!raw) return;
+    try {
+      const data = JSON.parse(raw);
+      if (data.tfSelections) tfSelections = data.tfSelections;
+      if (data.vocabSelections) vocabSelections = data.vocabSelections;
+
+      // Ex1
+      if (data.ex1) document.getElementById('ex1Input').value = data.ex1;
+
+      // TT
+      if (data.ttAnalyse) document.getElementById('ttAnalyse').value = data.ttAnalyse;
+      if (data.ttEvaluate) document.getElementById('ttEvaluate').value = data.ttEvaluate;
+      if (data.ttCreate) document.getElementById('ttCreate').value = data.ttCreate;
+
+      // MC
+      if (data.mcSelected) {
+        document.querySelectorAll('#mcGroup .choice').forEach(el => {
+          if (el.dataset.value === data.mcSelected) el.classList.add('selected');
+        });
+      }
+    } catch (e) {}
+  }
+
+  // ——— Сброс ———
+  function resetAll() {
+    if (confirm('Очистить все ответы?')) {
+      localStorage.removeItem('larpState');
+      location.reload();
+    }
+  }
+
+  // ——— Toggle Q&A ———
+  function toggleA(el) {
+    const block = el.closest('.qa-block');
+    const answer = block.querySelector('.a');
+    if (answer) answer.classList.toggle('show');
+  }
+
+  // ——— Выбор MCQ ———
+  document.addEventListener('click', (e) => {
+    const choice = e.target.closest('.choice');
+    if (choice && choice.closest('#mcGroup')) {
+      choice.closest('#mcGroup').querySelectorAll('.choice').forEach(c => c.classList.remove('selected'));
+      choice.classList.add('selected');
+      saveState();
+    }
+  });
+
+  // ——— Автосохранение при вводе ———
+  document.querySelectorAll('textarea').forEach(ta => {
+    ta.addEventListener('input', saveState);
+  });
+
+  // ——— Запуск ———
+  renderTF();
+  renderVocab();
+  loadState();
+
+  // Перерисовка vocab после загрузки состояния
+  // (переопределяем, чтобы отобразить выбранные слова)
+  setTimeout(() => {
+    // если есть сохранённые выборы, обновляем дропы
+    document.querySelectorAll('.drop-zone').forEach((drop, i) => {
+      if (vocabSelections[i]) {
+        drop.textContent = vocabSelections[i];
+        drop.classList.add('dropped');
+      }
+    });
+  }, 50);
+</script>
+
+</body>
+</html>
